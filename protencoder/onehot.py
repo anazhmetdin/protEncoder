@@ -1,8 +1,10 @@
 from math import inf
 from protencoder.protencoder import encoder
 
-class ONEencoder(encoder):
+
+class ONEencoder():
     def __init__(self):
+        self.handler = encoder()
         # Nine physicochemical properties for 20 amino acid types
         """
         H1, hydrophobicity

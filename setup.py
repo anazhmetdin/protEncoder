@@ -10,11 +10,11 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = ['biopython']
 
-setup_requirements = [ ]
+setup_requirements = ['biopython']
 
-test_requirements = [ ]
+test_requirements = []
 
 setup(
     author="Ahmed Negmeldin",
@@ -50,4 +50,5 @@ setup(
     url='https://github.com/anegm98/protencoder',
     version='0.1.0',
     zip_safe=False,
+    package_data={'gwas': ['data/*']}
 )
