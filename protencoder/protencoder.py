@@ -5,6 +5,7 @@ import numpy as np
 class encoder(object):
     def __init__(self):
         self.seqDict = dict()
+        self.seqKeys = list()
 
     def read_fasta(self, seqPath):
         fasta_sequences = SeqIO.parse(seqPath, 'fasta')
@@ -13,10 +14,16 @@ class encoder(object):
 
     def dump(self, outPrefix):
         seqArr = np.array(list(self.seqDict.values()))
-        ordered = list(self.seqDict.keys())
+        seqKeys = list(self.seqDict.keys())
         self.seqDict = dict()
         np.save(outPrefix + "_onehot", seqArr)
         del seqArr
-        orderedF = open(outPrefix + "_ordered", 'w')
-        for i in ordered:
-            orderedF.write(i + "\n")
+        seqKeysF = open(outPrefix + "_keys.txt", 'w')
+        for i in seqKeys:
+            seqKeysF.write(i + "\n")
+        seqKeysF.close()
+
+    def load(self, inPreFix):
+        seqKeysF = open(inPreFix + "_keys.txt")
+        for i in seqKeysF.readline():
+            self.seqKeys.append(i.rstrip("\n"))
