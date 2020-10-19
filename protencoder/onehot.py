@@ -3,8 +3,9 @@ from protencoder.protencoder import encoder
 
 
 class ONEencoder():
-    def __init__(self):
+    def __init__(self, maxLen):
         self.handler = encoder()
+        self.maxLen = maxLen
         # Nine physicochemical properties for 20 amino acid types
         """
         H1, hydrophobicity
@@ -39,11 +40,13 @@ class ONEencoder():
                        'V': [1.08, -1.5, 2.0, 71.5, 5.9, 0.14, 1.645, 0.057004, 99.1326],
                        'W': [0.81, -3.4, 3.0, 145.5, 5.4, 0.409, 2.663, 0.037977, 186.2132],
                        'Y': [0.26, -2.3, 3.0, 117.3, 6.2, 0.298, 2.368, 0.023599, 163.176]}
-        Nprops = len(self.aaDict['A'])
+        self.Nprops = len(self.aaDict['A'])
+        self.aaCount = len(self.aaDict)
+        self.vecLen = self.Nprops + self.aaCount
         # creating an index for each AA
         self.aa = {b: [a] for a, b in enumerate(self.aaDict.keys())}
         # getting minimum and maximum value of each property
-        MinMax = Nprops*[[inf, -inf]]
+        MinMax = self.Nprops*[[inf, -inf]]
         for k in self.aaDict:
             for v in range(len(self.aaDict[k])):
                 if self.aaDict[k][v] < MinMax[v][0]:
@@ -57,7 +60,7 @@ class ONEencoder():
                 self.aaDict[k][v] /= (MinMax[v][1] - MinMax[v][0])
         # adding 'X', 'U', and 'O' for ambigous amino acids, Selenocysteine
         # and Pyrrolysine.
-        self.aaDict['X'] = Nprops * [0.5]
+        self.aaDict['X'] = self.Nprops * [0.5]
         self.aa['X'] = list(range(len(self.aaDict)))
         self.aaDict['U'] = self.aaDict['C']
         self.aa['U'] = self.aa['C']
@@ -78,10 +81,14 @@ class ONEencoder():
         for prot in self.handler.seqDict:
             encoded = []
             seq = self.handler.seqDict[prot]
+            if len(seq) > self.maxLen:
+                seq = seq[:self.maxLen]
             for ris in seq:
                 zeros = len(self.aa)*[0]
                 for pos in self.aa[ris]:
                     zeros[pos] = 1
                 encoded += zeros
                 encoded += self.aaDict[ris]
+            if len(encoded) < self.maxLen*(self.vecLen):
+                encoded += (self.maxLen*(29) - len(encoded))*[1]
             self.handler.seqDict[prot] = encoded
