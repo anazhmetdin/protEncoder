@@ -50,5 +50,5 @@ setup(
     url='https://github.com/anegm98/protencoder',
     version='0.1.0',
     zip_safe=False,
-    package_data={'gwas': ['data/*']}
+    package_data={'protencoder': ['data/*']}
 )
