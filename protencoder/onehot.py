@@ -17,7 +17,7 @@ class ONEencoder(encoder):
         """
         # This data is copied from: Li Z, Tang J, Guo F (2016)
         # DOI:10.1371/journal.pone.0147467
-        self.self.aaDict = {'A': [0.62, -0.5, 2, 27.5, 8.1, 0.046, 1.181, 0.007187, 71.0788],
+        self.aaDict = {'A': [0.62, -0.5, 2, 27.5, 8.1, 0.046, 1.181, 0.007187, 71.0788],
                        'C': [0.29, -1.0, 2.0, 44.6, 5.5, 0.128, 1.461, -0.03661, 103.1388],
                        'D': [-0.9, 3.0, 4.0, 40.0, 13.0, 0.105, 1.587, -0.02382, 115.0886],
                        'E': [-0.74, 3.0, 4.0, 62.0, 12.3, 0.151, 1.862, 0.006802, 129.1155],
@@ -37,10 +37,11 @@ class ONEencoder(encoder):
                        'V': [1.08, -1.5, 2.0, 71.5, 5.9, 0.14, 1.645, 0.057004, 99.1326],
                        'W': [0.81, -3.4, 3.0, 145.5, 5.4, 0.409, 2.663, 0.037977, 186.2132],
                        'Y': [0.26, -2.3, 3.0, 117.3, 6.2, 0.298, 2.368, 0.023599, 163.176]}
+        Nprops = len(self.aaDict['A'])
         # creating an index for each AA
-        self.aa = {b: a for a, b in enumerate(self.aaDict.keys())}
+        self.aa = {b: [a] for a, b in enumerate(self.aaDict.keys())}
         # getting minimum and maximum value of each property
-        MinMax = len(self.aaDict)*[[inf, -inf]]
+        MinMax = Nprops*[[inf, -inf]]
         for k in self.aaDict:
             for v in range(len(self.aaDict[k])):
                 if self.aaDict[k][v] < MinMax[v][0]:
@@ -52,12 +53,33 @@ class ONEencoder(encoder):
             for v in range(len(self.aaDict[k])):
                 self.aaDict[k][v] = self.aaDict[k][v] - MinMax[v][0]
                 self.aaDict[k][v] /= (MinMax[v][1] - MinMax[v][0])
+        # adding 'X', 'U', and 'O' for ambigous amino acids, Selenocysteine
+        # and Pyrrolysine.
+        self.aaDict['X'] = Nprops * [0.5]
+        self.aa['X'] = list(range(len(self.aaDict)))
+        self.aaDict['U'] = self.aaDict['C']
+        self.aa['U'] = self.aa['C']
+        self.aaDict['O'] = self.aaDict['K']
+        self.aa['O'] = self.aa['K']
+        # adding 'B' for 'N'/'D', and 'Z' for 'Q'/'E', and 'J' for 'L'/'I'
+        summ = [sum(i) for i in zip(self.aaDict['N'], self.aaDict['D'])]
+        self.aaDict['B'] = [x/2 for x in summ]
+        self.aa['B'] = self.aa['N'] + self.aa['D']
+        summ = [sum(i) for i in zip(self.aaDict['Q'], self.aaDict['E'])]
+        self.aaDict['Z'] = [x/2 for x in summ]
+        self.aa['Z'] = self.aa['Q'] + self.aa['E']
+        summ = [sum(i) for i in zip(self.aaDict['L'], self.aaDict['I'])]
+        self.aaDict['J'] = [x/2 for x in summ]
+        self.aa['J'] = self.aa['L'] + self.aa['I']
 
-    def one_hot(self, seq):
-        encoded = []
-        for ris in seq:
-            zeros = len(self.aa)*[0]
-            zeros[self.aa[ris]] = 1
-            encoded += zeros
-            encoded += self.aaDict[ris]
-        return encoded
+    def encode(self):
+        for prot in self.handler.seqDict:
+            encoded = []
+            seq = self.handler.seqDict[prot]
+            for ris in seq:
+                zeros = len(self.aa)*[0]
+                for pos in self.aa[ris]:
+                    zeros[pos] = 1
+                encoded += zeros
+                encoded += self.aaDict[ris]
+            self.handler.seqDict[prot] = encoded
