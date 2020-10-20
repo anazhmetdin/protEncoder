@@ -46,7 +46,7 @@ def main():
     chopSize = int(args.chopSize)
     GOpartioned = bool(int(args.GOpartioned))
     collection = args.collection
-    frequent = int(args.frequent)
+    numFreqGO = int(args.numFreqGO)
     outPrefix = args.outPrefix
 
     if collection != "":
@@ -59,19 +59,19 @@ def main():
             seqDict[line[2]].append(line[1])
         GOAf.close()
 
-        filterF = open(outPrefix+"_filter_"+str(frequent), 'w')
+        filterF = open(outPrefix+"_filter_"+str(numFreqGO), 'w')
         counter = Counter(seqDict['F'])
-        most_occur = [x[0] for x in counter.most_common(frequent)]
+        most_occur = [x[0] for x in counter.most_common(numFreqGO)]
         for GOA in most_occur:
             filterF.write(GOA+"\t"+'F'+"\n")
 
         counter = Counter(seqDict['P'])
-        most_occur = [x[0] for x in counter.most_common(frequent)]
+        most_occur = [x[0] for x in counter.most_common(numFreqGO)]
         for GOA in most_occur:
             filterF.write(GOA+"\t"+'P'+"\n")
 
         counter = Counter(seqDict['C'])
-        most_occur = [x[0] for x in counter.most_common(frequent)]
+        most_occur = [x[0] for x in counter.most_common(numFreqGO)]
         for GOA in most_occur:
             filterF.write(GOA+"\t"+'C'+"\n")
 
