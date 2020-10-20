@@ -19,7 +19,7 @@ def main():
                         encoding filteration")
     parser.add_argument("-m", "--maxLen", default="2000",
                         help="maximum length of the protein to be encoded;\
-                        default = 2000")
+                        if -1 m = max protein length, default = 2000")
     parser.add_argument("-o", "--outPrefix", default="",
                         help="output files prefix")
     args = parser.parse_args()
@@ -33,19 +33,19 @@ def main():
         outPrefix = args.outPrefix if args.outPrefix != "" else seqPath[:-6]
         oneHotencd = ONEencoder(maxLen)
         if filter != "":
-            oneHotencd.handler.load(filter)
-        oneHotencd.handler.read_fasta(seqPath)
+            oneHotencd.load_filter(filter)
+        oneHotencd.read(seqPath)
         oneHotencd.encode()
-        oneHotencd.handler.dump(outPrefix)
+        oneHotencd.dump(outPrefix)
 
     elif not (GOfile is None):
         outPrefix = args.outPrefix if args.outPrefix != "" else GOfile[:-4]
         oneHotencd = GOencoder()
         if filter != "":
-            oneHotencd.handler.load(filter)
-        oneHotencd.handler.read_GO(GOfile)
+            oneHotencd.load_filter(filter)
+        oneHotencd.read(GOfile)
         oneHotencd.encode()
-        oneHotencd.handler.dump_GO(outPrefix)
+        oneHotencd.dump(outPrefix)
     return 0
 
 

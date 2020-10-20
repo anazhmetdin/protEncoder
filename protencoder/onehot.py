@@ -95,5 +95,17 @@ class ONEencoder():
                 encoded += zeros
                 encoded += self.aaDict[ris]
             if len(encoded) < self.maxLen*(self.vecLen):
-                encoded += (self.maxLen*(29) - len(encoded))*[1]
+                encoded += (self.maxLen*(29) - len(encoded))*[0]
             self.handler.seqDict[prot] = encoded
+
+    def read(self, seqPath):
+        self.handler.read_fasta(seqPath)
+        if self.maxLen == -1:
+            self.maxLen = len(sorted(self.handler.seqDict.values(),
+                                     key=len)[-1])
+
+    def dump(self, outPrefix):
+        self.handler.dump(outPrefix)
+
+    def load_filter(self, filter):
+        self.handler.load_filter(filter)

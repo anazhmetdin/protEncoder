@@ -22,3 +22,12 @@ class GOencoder(encoder):
                 for GOA in self.handler.seqDict[seq][GOclass]:
                     encoded[self.GOclasses[GOclass][GOA]] = 1
                 self.handler.seqDict[seq][GOclass] = encoded
+
+    def read(self, GOfile):
+        self.handler.read_GO(GOfile)
+
+    def dump(self, outPrefix):
+        self.handler.dump_GO(self.GOclasses, outPrefix)
+
+    def load_filter(self, filter):
+        self.handler.load_filter(filter)
