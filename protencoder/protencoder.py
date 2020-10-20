@@ -6,6 +6,7 @@ class encoder(object):
     def __init__(self):
         self.seqDict = dict()
         self.filter = list()
+        self.GOfilter = {'F': list(), 'P': list(), 'C': list()}
         self.seqKeys = list()
 
     def read_fasta(self, seqPath):
@@ -20,13 +21,16 @@ class encoder(object):
         keysF = open(filePath)
         for line in keysF.readlines():
             line = line.rstrip("\n").split("\t")
-            if line[0] in self.filter or self.filter == []:
-                if line[0] not in self.seqDict:
-                    self.seqDict[line[0]] = {'F': [], 'P': [], 'C': []}
-                self.seqDict[line[0]][line[2]].append(line[1])
-                if self.filter == []:
-                    self.seqKeys.append(line[0])
+            if self.GOfilter['F'] != []:
+                if line[1] in self.GOfilter[line[2]]:
+                    if (line[0] in self.filter or self.filter == []):
+                        if line[0] not in self.seqDict:
+                            self.seqDict[line[0]] = {'F': [], 'P': [], 'C': []}
+                        self.seqDict[line[0]][line[2]].append(line[1])
+                        if self.filter == []:
+                            self.seqKeys.append(line[0])
         keysF.close()
+        self.seqKeys = [x for x in self.seqKeys if x in self.seqDict]
 
     def dump(self, outPrefix):
         seqArr = np.array(list(self.seqDict.values()))
@@ -43,23 +47,23 @@ class encoder(object):
         seqKeysF.close()
 
     def dump_GO(self, GOclasses, outPrefix):
-        ForderedGOA = []
-        PorderedGOA = []
-        CorderedGOA = []
+        FOrderedGOA = []
+        POrderedGOA = []
+        COrderedGOA = []
         for seq in self.seqKeys:
-            ForderedGOA.append(self.seqDict[seq]['F'])
-            PorderedGOA.append(self.seqDict[seq]['P'])
-            CorderedGOA.append(self.seqDict[seq]['C'])
+            FOrderedGOA.append(self.seqDict[seq]['F'])
+            POrderedGOA.append(self.seqDict[seq]['P'])
+            COrderedGOA.append(self.seqDict[seq]['C'])
             self.seqDict.pop(seq)
-        ForderedGOA = np.array(ForderedGOA)
-        PorderedGOA = np.array(PorderedGOA)
-        CorderedGOA = np.array(CorderedGOA)
-        np.save(outPrefix + "_FGOA", ForderedGOA)
-        del ForderedGOA
-        np.save(outPrefix + "_PGOA", PorderedGOA)
-        del PorderedGOA
-        np.save(outPrefix + "_CGOA", CorderedGOA)
-        del CorderedGOA
+        FOrderedGOA = np.array(FOrderedGOA)
+        POrderedGOA = np.array(POrderedGOA)
+        COrderedGOA = np.array(COrderedGOA)
+        np.save(outPrefix + "_FGOA", FOrderedGOA)
+        del FOrderedGOA
+        np.save(outPrefix + "_PGOA", POrderedGOA)
+        del POrderedGOA
+        np.save(outPrefix + "_CGOA", COrderedGOA)
+        del COrderedGOA
         FGOAf = open(outPrefix + "_FGOclasses.txt", 'w')
         PGOAf = open(outPrefix + "_PGOclasses.txt", 'w')
         CGOAf = open(outPrefix + "_CGOclasses.txt", 'w')
@@ -78,3 +82,10 @@ class encoder(object):
         for i in seqKeysF.readlines():
             self.filter.append(i.rstrip("\n"))
         seqKeysF.close()
+
+    def load_GO_filter(self, filter):
+        GOKeysF = open(filter)
+        for i in GOKeysF.readlines():
+            i = i.rstrip("\n").split('\t')
+            self.GOfilter[i[1]].append(i[0])
+        GOKeysF.close()

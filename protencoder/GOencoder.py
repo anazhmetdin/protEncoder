@@ -7,11 +7,13 @@ class GOencoder(encoder):
         self.GOclasses = {'F': set(), 'P': set(), 'C': set()}
 
     def encode(self):
-        for prot in self.handler.seqDict:
-            for GOclass in self.handler.seqDict[prot]:
-                for GOA in self.handler.seqDict[prot][GOclass]:
-                    self.GOclasses[GOclass].add(GOA)
-
+        if self.handler.GOfilter['F'] != []:
+            self.GOclasses = self.handler.GOfilter
+        else:
+            for prot in self.handler.seqDict:
+                for GOclass in self.handler.seqDict[prot]:
+                    for GOA in self.handler.seqDict[prot][GOclass]:
+                        self.GOclasses[GOclass].add(GOA)
         for GOclass in self.GOclasses:
             self.GOclasses[GOclass] = list(self.GOclasses[GOclass])
             self.GOclasses[GOclass] = {b: a for a,
@@ -29,5 +31,6 @@ class GOencoder(encoder):
     def dump(self, outPrefix):
         self.handler.dump_GO(self.GOclasses, outPrefix)
 
-    def load_filter(self, filter):
-        self.handler.load_filter(filter)
+    def load_filter(self, Protfilter, GOfilter):
+        self.handler.load_filter(Protfilter)
+        self.handler.load_GO_filter(GOfilter)
