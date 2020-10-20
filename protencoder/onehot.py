@@ -78,6 +78,11 @@ class ONEencoder():
         self.aa['J'] = self.aa['L'] + self.aa['I']
 
     def encode(self):
+        if self.handler.seqKeys != []:
+            protList = list(self.handler.seqDict.keys())
+            for prot in protList:
+                if prot not in self.handler.seqDict:
+                    self.handler.seqDict.pop(prot)
         for prot in self.handler.seqDict:
             encoded = []
             seq = self.handler.seqDict[prot]

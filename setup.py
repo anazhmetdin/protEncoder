@@ -31,7 +31,8 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="python package to encode protein using different methods for machine learning",
+    description="python package to encode protein using different methods\
+                 for machine learning",
     entry_points={
         'console_scripts': [
             'protencoder=protencoder.cli:main',
@@ -48,7 +49,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/anegm98/protencoder',
-    version='0.2.1',
+    version='1.0.0',
     zip_safe=False,
     package_data={'protencoder': ['data/*']}
 )
