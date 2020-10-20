@@ -2,14 +2,21 @@
 import argparse
 import sys
 from protencoder.onehot import ONEencoder
+from protencoder.GOencoder import GOencoder
 
 
 def main():
     """Console script for protencoder."""
     parser = argparse.ArgumentParser()
     parser.add_argument('_', nargs='*')
-    parser.add_argument("-d", "--seqPath", required=True,
-                        help="file path of the protein sequences")
+    filePathParser = parser.add_mutually_exclusive_group(required=True)
+    filePathParser.add_argument("-d", "--seqPath",
+                                help="file path of the protein sequences")
+    filePathParser.add_argument("-g", "--GOfile",
+                                help="file path of the GOA of proteins")
+    parser.add_argument("-f", "--filter", default="",
+                        help="file path of protein keys to be used for\
+                        encoding filteration")
     parser.add_argument("-m", "--maxLen", default="2000",
                         help="maximum length of the protein to be encoded;\
                         default = 2000")
@@ -18,13 +25,27 @@ def main():
     args = parser.parse_args()
 
     seqPath = args.seqPath
+    GOfile = args.GOfile
+    filter = args.filter
     maxLen = int(args.maxLen)
-    outPrefix = args.outPrefix if args.outPrefix != "" else seqPath[:-6]
 
-    oneHotencd = ONEencoder(maxLen)
-    oneHotencd.handler.read_fasta(seqPath)
-    oneHotencd.encode()
-    oneHotencd.handler.dump(outPrefix)
+    if not (seqPath is None):
+        outPrefix = args.outPrefix if args.outPrefix != "" else seqPath[:-6]
+        oneHotencd = ONEencoder(maxLen)
+        if filter != "":
+            oneHotencd.handler.load(filter)
+        oneHotencd.handler.read_fasta(seqPath)
+        oneHotencd.encode()
+        oneHotencd.handler.dump(outPrefix)
+
+    elif not (GOfile is None):
+        outPrefix = args.outPrefix if args.outPrefix != "" else GOfile[:-4]
+        oneHotencd = GOencoder()
+        if filter != "":
+            oneHotencd.handler.load(filter)
+        oneHotencd.handler.read_GO(GOfile)
+        oneHotencd.encode()
+        oneHotencd.handler.dump_GO(outPrefix)
     return 0
 
 
