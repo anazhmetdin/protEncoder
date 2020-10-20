@@ -78,11 +78,6 @@ class ONEencoder():
         self.aa['J'] = self.aa['L'] + self.aa['I']
 
     def encode(self):
-        if self.handler.seqKeys != []:
-            protList = list(self.handler.seqDict.keys())
-            for prot in protList:
-                if prot not in self.handler.seqDict:
-                    self.handler.seqDict.pop(prot)
         for prot in self.handler.seqDict:
             encoded = []
             seq = self.handler.seqDict[prot]
@@ -95,7 +90,8 @@ class ONEencoder():
                 encoded += zeros
                 encoded += self.aaDict[ris]
             if len(encoded) < self.maxLen*(self.vecLen):
-                encoded += (self.maxLen*(29) - len(encoded))*[0]
+                VecMaxLen = self.maxLen*(len(self.aa) + len(self.aaDict[ris]))
+                encoded += (VecMaxLen - len(encoded))*[0]
             self.handler.seqDict[prot] = encoded
 
     def read(self, seqPath):
