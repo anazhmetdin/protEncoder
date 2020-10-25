@@ -22,10 +22,10 @@ class encoder(object):
         for line in keysF.readlines():
             line = line.rstrip("\n").split("\t")
             if self.GOfilter['F'] != []:
-                if line[1] in self.GOfilter[line[2]]:
-                    if (line[0] in self.filter or self.filter == []):
-                        if line[0] not in self.seqDict:
-                            self.seqDict[line[0]] = {'F': [], 'P': [], 'C': []}
+                if (line[0] in self.filter or self.filter == []):
+                    if line[0] not in self.seqDict:
+                        self.seqDict[line[0]] = {'F': [], 'P': [], 'C': []}
+                    if line[1] in self.GOfilter[line[2]]:
                         self.seqDict[line[0]][line[2]].append(line[1])
                         if self.filter == []:
                             self.seqKeys.append(line[0])

@@ -61,7 +61,7 @@ class ONEencoder():
         # adding 'X', 'U', and 'O' for ambigous amino acids, Selenocysteine
         # and Pyrrolysine.
         self.aaDict['X'] = self.Nprops * [0.5]
-        self.aa['X'] = list(range(len(self.aaDict)))
+        self.aa['X'] = list(range(len(self.aaDict)-1))
         self.aaDict['U'] = self.aaDict['C']
         self.aa['U'] = self.aa['C']
         self.aaDict['O'] = self.aaDict['K']
@@ -84,13 +84,13 @@ class ONEencoder():
             if len(seq) > self.maxLen:
                 seq = seq[:self.maxLen]
             for ris in seq:
-                zeros = len(self.aa)*[0]
+                zeros = 20*[0]
                 for pos in self.aa[ris]:
                     zeros[pos] = 1
                 encoded += zeros
                 encoded += self.aaDict[ris]
             if len(encoded) < self.maxLen*(self.vecLen):
-                VecMaxLen = self.maxLen*(len(self.aa) + len(self.aaDict[ris]))
+                VecMaxLen = self.maxLen*(20 + len(self.aaDict[ris]))
                 encoded += (VecMaxLen - len(encoded))*[0]
             self.handler.seqDict[prot] = encoded
 
