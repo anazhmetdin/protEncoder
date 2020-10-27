@@ -6,6 +6,7 @@ from Bio import SeqIO
 from collections import Counter
 from protencoder.onehot import ONEencoder
 from protencoder.GOencoder import GOencoder
+from protencoder.kmerHz import protKmers
 
 
 def devide(seqPath, chopSize, outPrefix):
@@ -62,6 +63,9 @@ def main():
                                 help="file path of the protein sequences")
     filePathParser.add_argument("-g", "--GOfile",
                                 help="file path of the GOA of proteins")
+    parser.add_argument("-M", "--method", default="o",
+                        help="protein encoding method; o: (defult)onehot\
+                        k: kmers frequency")
     parser.add_argument("-f", "--Protfilter", default="",
                         help="file path of protein keys to be used for\
                         encoding filteration. in case of multiple filters\
@@ -98,45 +102,51 @@ def main():
     collection = args.collection
     numFreqGO = int(args.numFreqGO)
     outPrefix = args.outPrefix
+    method = args.method
 
-    if not (seqPath is None):
-        outPrefix = args.outPrefix if args.outPrefix != "" else seqPath[:-6]
-        if collection != "":
-            create_filter(collection, numFreqGO, outPrefix)
-        oneHotencd = ONEencoder(maxLen)
-        if Protfilter != "":
-            oneHotencd.load_filter(Protfilter)
-        if chopSize == -1:
-            oneHotencd.read(seqPath)
-            oneHotencd.encode()
-            oneHotencd.dump(outPrefix)
-        else:
-            devide(seqPath, chopSize, outPrefix)
-            for name in glob.glob(outPrefix+"_part*.fasta"):
-                oneHotencd.read(name)
-                oneHotencd.encode()
-                num = name[name.find("part") + 4:-6]
-                oneHotencd.dump(outPrefix+"_part"+num)
-
-    elif not (GOfile is None):
-        outPrefix = args.outPrefix if args.outPrefix != "" else GOfile[:-4]
-        if collection != "":
-            GOfilter = create_filter(collection, numFreqGO, outPrefix)
-        if not GOpartioned:
-            oneHotencd = GOencoder()
+    if method == "o":
+        if not (seqPath is None):
+            outPrefix = args.outPrefix if args.outPrefix != "" else seqPath[:-6]
+            if collection != "":
+                create_filter(collection, numFreqGO, outPrefix)
+            oneHotencd = ONEencoder(maxLen)
             if Protfilter != "":
-                oneHotencd.load_filter(Protfilter, GOfilter)
-            oneHotencd.read(GOfile)
-            oneHotencd.encode()
-            oneHotencd.dump(outPrefix)
-        else:
-            for name in glob.glob(Protfilter+"_part*_keys.txt"):
+                oneHotencd.load_filter(Protfilter)
+            if chopSize == -1:
+                oneHotencd.read(seqPath)
+                oneHotencd.encode()
+                oneHotencd.dump(outPrefix)
+            else:
+                devide(seqPath, chopSize, outPrefix)
+                for name in glob.glob(outPrefix+"_part*.fasta"):
+                    oneHotencd.read(name)
+                    oneHotencd.encode()
+                    num = name[name.find("part") + 4:-6]
+                    oneHotencd.dump(outPrefix+"_part"+num)
+
+        elif not (GOfile is None):
+            outPrefix = args.outPrefix if args.outPrefix != "" else GOfile[:-4]
+            if collection != "":
+                GOfilter = create_filter(collection, numFreqGO, outPrefix)
+            if not GOpartioned:
                 oneHotencd = GOencoder()
-                oneHotencd.load_filter(name, GOfilter)
+                if Protfilter != "":
+                    oneHotencd.load_filter(Protfilter, GOfilter)
                 oneHotencd.read(GOfile)
                 oneHotencd.encode()
-                num = name[name.find("part") + 4:-9]
-                oneHotencd.dump(outPrefix+"_part"+num)
+                oneHotencd.dump(outPrefix)
+            else:
+                for name in glob.glob(Protfilter+"_part*_keys.txt"):
+                    oneHotencd = GOencoder()
+                    oneHotencd.load_filter(name, GOfilter)
+                    oneHotencd.read(GOfile)
+                    oneHotencd.encode()
+                    num = name[name.find("part") + 4:-9]
+                    oneHotencd.dump(outPrefix+"_part"+num)
+    elif method == "k":
+        encoder = protKmers(3)
+        encoder.read(seqPath)
+        encoder.encode()
     return 0
 
 
