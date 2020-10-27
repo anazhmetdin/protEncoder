@@ -1,5 +1,5 @@
 from protencoder.protencoder import encoder
-from itertools import combinations_with_replacement
+from itertools import product
 from copy import deepcopy
 
 
@@ -9,7 +9,7 @@ class protKmers():
         self.k = k
         self.aa = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N',
                    'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
-        self.kmers = list(combinations_with_replacement(self.aa, k))
+        self.kmers = list(product(self.aa, repeat=k))
         self.encodedTemp = [0 for i in self.kmers]
 
     def encode(self):
