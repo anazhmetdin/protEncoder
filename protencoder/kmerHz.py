@@ -22,7 +22,9 @@ class protKmers():
                 freq = seq.count(kmer)
                 encoded[i] = freq
             self.handler.seqDict[prot] = encoded
-        print(encoded)
 
     def read(self, seqPath):
         self.handler.read_fasta(seqPath)
+
+    def dump(self, outPrefix):
+        self.handler.dump(outPrefix, "kmerHz")

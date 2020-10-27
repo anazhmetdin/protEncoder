@@ -66,6 +66,8 @@ def main():
     parser.add_argument("-M", "--method", default="o",
                         help="protein encoding method; o: (defult)onehot\
                         k: kmers frequency")
+    parser.add_argument("-k", "--kmerLength", default="3",
+                        help="kmer length in frequency encoder")
     parser.add_argument("-f", "--Protfilter", default="",
                         help="file path of protein keys to be used for\
                         encoding filteration. in case of multiple filters\
@@ -103,10 +105,14 @@ def main():
     numFreqGO = int(args.numFreqGO)
     outPrefix = args.outPrefix
     method = args.method
+    k = int(args.kmerLength)
+
+    outPrefix = args.outPrefix if args.outPrefix != "" else seqPath
 
     if method == "o":
         if not (seqPath is None):
-            outPrefix = args.outPrefix if args.outPrefix != "" else seqPath[:-6]
+            if args.outPrefix == seqPath:
+                outPrefix = seqPath[:-6]
             if collection != "":
                 create_filter(collection, numFreqGO, outPrefix)
             oneHotencd = ONEencoder(maxLen)
@@ -125,7 +131,8 @@ def main():
                     oneHotencd.dump(outPrefix+"_part"+num)
 
         elif not (GOfile is None):
-            outPrefix = args.outPrefix if args.outPrefix != "" else GOfile[:-4]
+            if args.outPrefix == seqPath:
+                outPrefix = seqPath[:-4]
             if collection != "":
                 GOfilter = create_filter(collection, numFreqGO, outPrefix)
             if not GOpartioned:
@@ -144,9 +151,12 @@ def main():
                     num = name[name.find("part") + 4:-9]
                     oneHotencd.dump(outPrefix+"_part"+num)
     elif method == "k":
-        encoder = protKmers(3)
+        if args.outPrefix == seqPath:
+            outPrefix = seqPath[:-6]
+        encoder = protKmers(k)
         encoder.read(seqPath)
         encoder.encode()
+        encoder.dump(outPrefix)
     return 0
 
 

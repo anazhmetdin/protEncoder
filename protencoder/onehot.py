@@ -101,7 +101,7 @@ class ONEencoder():
                                      key=len)[-1])
 
     def dump(self, outPrefix):
-        self.handler.dump(outPrefix)
+        self.handler.dump(outPrefix, "onehot")
 
     def load_filter(self, filter):
         self.handler.load_filter(filter)

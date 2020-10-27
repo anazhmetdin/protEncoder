@@ -32,14 +32,14 @@ class encoder(object):
         keysF.close()
         self.seqKeys = [x for x in self.seqKeys if x in self.seqDict]
 
-    def dump(self, outPrefix):
+    def dump(self, outPrefix, method):
         seqArr = np.array(list(self.seqDict.values()))
         if self.filter == []:
             self.seqKeys = list(self.seqDict.keys())
         else:
             self.seqKeys = self.filter
         self.seqDict = dict()
-        np.save(outPrefix + "_onehot", seqArr)
+        np.save(outPrefix + "_" + method, seqArr)
         del seqArr
         seqKeysF = open(outPrefix + "_keys.txt", 'w')
         for i in self.seqKeys:
