@@ -108,33 +108,34 @@ def main():
     k = int(args.kmerLength)
 
     outPrefix = args.outPrefix if args.outPrefix != "" else seqPath
+    if collection != "":
+        GOfilter = create_filter(collection, numFreqGO, outPrefix)
 
-    if method == "o":
+    if method in "ok":
         if not (seqPath is None):
             if args.outPrefix == seqPath:
                 outPrefix = seqPath[:-6]
-            if collection != "":
-                create_filter(collection, numFreqGO, outPrefix)
-            oneHotencd = ONEencoder(maxLen)
+            if method == 'o':
+                encoder = ONEencoder(maxLen)
+            elif method == 'k':
+                encoder = protKmers(k)
             if Protfilter != "":
-                oneHotencd.load_filter(Protfilter)
+                encoder.load_filter(Protfilter)
             if chopSize == -1:
-                oneHotencd.read(seqPath)
-                oneHotencd.encode()
-                oneHotencd.dump(outPrefix)
+                encoder.read(seqPath)
+                encoder.encode()
+                encoder.dump(outPrefix)
             else:
                 devide(seqPath, chopSize, outPrefix)
                 for name in glob.glob(outPrefix+"_part*.fasta"):
-                    oneHotencd.read(name)
-                    oneHotencd.encode()
+                    encoder.read(name)
+                    encoder.encode()
                     num = name[name.find("part") + 4:-6]
-                    oneHotencd.dump(outPrefix+"_part"+num)
+                    encoder.dump(outPrefix+"_part"+num)
 
         elif not (GOfile is None):
             if args.outPrefix == seqPath:
                 outPrefix = seqPath[:-4]
-            if collection != "":
-                GOfilter = create_filter(collection, numFreqGO, outPrefix)
             if not GOpartioned:
                 oneHotencd = GOencoder()
                 if Protfilter != "":
@@ -150,14 +151,7 @@ def main():
                     oneHotencd.encode()
                     num = name[name.find("part") + 4:-9]
                     oneHotencd.dump(outPrefix+"_part"+num)
-    elif method == "k":
-        if args.outPrefix == seqPath:
-            outPrefix = seqPath[:-6]
-        encoder = protKmers(k)
-        encoder.read(seqPath)
-        encoder.encode()
-        encoder.dump(outPrefix)
-    return 0
+        return 0
 
 
 if __name__ == "__main__":
