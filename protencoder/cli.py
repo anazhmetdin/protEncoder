@@ -7,6 +7,7 @@ from collections import Counter
 from protencoder.onehot import ONEencoder
 from protencoder.GOencoder import GOencoder
 from protencoder.kmerHz import protKmers
+from protencoder.coMatrix import AAcomptability
 
 
 def devide(seqPath, chopSize, outPrefix):
@@ -64,8 +65,8 @@ def main():
     filePathParser.add_argument("-g", "--GOfile",
                                 help="file path of the GOA of proteins")
     parser.add_argument("-M", "--method", default="o",
-                        help="protein encoding method; o: (defult)onehot\
-                        k: kmers frequency")
+                        help="protein encoding method; o: (defult)onehot,\
+                        k: kmers frequency, c: compatibility matrices")
     parser.add_argument("-k", "--kmerLength", default="3",
                         help="kmer length in frequency encoder")
     parser.add_argument("-f", "--Protfilter", default="",
@@ -111,14 +112,16 @@ def main():
     if collection != "":
         GOfilter = create_filter(collection, numFreqGO, outPrefix)
 
-    if method in "ok":
+    if method in "okc":
         if not (seqPath is None):
-            if args.outPrefix == seqPath:
+            if outPrefix == seqPath:
                 outPrefix = seqPath[:-6]
             if method == 'o':
                 encoder = ONEencoder(maxLen)
             elif method == 'k':
                 encoder = protKmers(k)
+            elif method == 'c':
+                encoder = AAcomptability()
             if Protfilter != "":
                 encoder.load_filter(Protfilter)
             if chopSize == -1:
