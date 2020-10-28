@@ -15,22 +15,21 @@ class AAcomptability():
             # first = len(seq)*[0]
             # second = [deepcopy(first) for i in range(len(seq))]
             # third = [deepcopy(second) for i in range(len(self.matrices))]
-            encoded = []
+            encoded = np.zeros((len(self.matrices), len(seq), len(seq)),
+                               dtype='uint8')
             for i in range(len(self.matrices)):
-                encoded.append([])
                 for j in range(len(seq)):
-                    encoded[i].append([])
                     for k in range(len(seq)):
                         if k <= j:
-                            score = self.matrices[i][seq[j]][seq[k]]
-                            encoded[i][j].append(score)
+                            score = (self.matrices[i][seq[j]][seq[k]]) * 255/20
+                            encoded[i][j][k] = score
+                            encoded[i][k][j] = score
                         else:
-                            encoded[i][j].append(0)
-                encoded = np.array(encoded)
-                triu = np.triu_indices_from(encoded[i])
-                encoded[i][triu] = encoded[i].T[triu]
-                encoded = encoded.tolist()
+                            break
+            encoded = np.mean(encoded, axis=0, dtype='float16')
             self.handler.seqDict[prot] = encoded
+            print('prot', encoded.shape)
+        print("file")
 
     def read(self, seqPath):
         self.handler.read_fasta(seqPath)
