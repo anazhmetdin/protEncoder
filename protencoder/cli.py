@@ -93,6 +93,8 @@ def main():
                                 protein annotations")
     parser.add_argument("-n", "--numFreqGO", default="500", help="number of\
                         the most frequent GO annotions to be considered")
+    parser.add_argument("-x", "--dsize", default="500", help="width of\
+                        the squared image of protein after compression")
     args = parser.parse_args()
 
     seqPath = args.seqPath
@@ -107,6 +109,7 @@ def main():
     outPrefix = args.outPrefix
     method = args.method
     k = int(args.kmerLength)
+    dsize = int(args.dsize)
 
     outPrefix = args.outPrefix if args.outPrefix != "" else seqPath
     if collection != "":
@@ -121,7 +124,7 @@ def main():
             elif method == 'k':
                 encoder = protKmers(k)
             elif method == 'c':
-                encoder = AAcomptability()
+                encoder = AAcomptability(dsize)
             if Protfilter != "":
                 encoder.load_filter(Protfilter)
             if chopSize == -1:

@@ -1,20 +1,18 @@
 from protencoder.protencoder import encoder
-from copy import deepcopy
+from cv2 import resize, INTER_LINEAR, INTER_AREA
 import numpy as np
 
 
 class AAcomptability():
-    def __init__(self):
+    def __init__(self, dsize=(500, 500)):
         self.handler = encoder()
+        self.dsize = (dsize, dsize)
         self.SCM, self.HCM, self.CCM = get_data()
         self.matrices = [self.SCM, self.HCM, self.CCM]
 
     def encode(self):
         for prot in self.handler.seqDict:
             seq = self.handler.seqDict[prot]
-            # first = len(seq)*[0]
-            # second = [deepcopy(first) for i in range(len(seq))]
-            # third = [deepcopy(second) for i in range(len(self.matrices))]
             encoded = np.zeros((len(self.matrices), len(seq), len(seq)),
                                dtype='uint8')
             for i in range(len(self.matrices)):
@@ -26,10 +24,17 @@ class AAcomptability():
                             encoded[i][k][j] = score
                         else:
                             break
-            encoded = np.mean(encoded, axis=0, dtype='float16')
-            self.handler.seqDict[prot] = encoded
-            print('prot', encoded.shape)
-        print("file")
+            encoded = np.mean(encoded, axis=0, dtype='float32')
+            encoded = self.co_resize(encoded)
+            self.handler.seqDict[prot] = encoded.astype('float16')
+
+    def co_resize(self, prot):
+        if prot.shape[0] < self.dsize[0]:
+            interpolation = INTER_LINEAR
+        elif prot.shape[0] > self.dsize[0]:
+            interpolation = INTER_AREA
+        x = resize(prot, self.dsize, interpolation=interpolation)
+        return x
 
     def read(self, seqPath):
         self.handler.read_fasta(seqPath)
