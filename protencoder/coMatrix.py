@@ -26,7 +26,7 @@ class AAcomptability():
                             break
             encoded = np.mean(encoded, axis=0, dtype='float32')
             encoded = self.co_resize(encoded)
-            self.handler.seqDict[prot] = encoded.astype('float16')
+            self.handler.seqDict[prot] = encoded.astype('uint8')
 
     def co_resize(self, prot):
         if prot.shape[0] < self.dsize[0]:
