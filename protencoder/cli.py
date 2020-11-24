@@ -8,6 +8,7 @@ from protencoder.onehot import ONEencoder
 from protencoder.GOencoder import GOencoder
 from protencoder.kmerHz import protKmers
 from protencoder.coMatrix import AAcomptability
+from protencoder.protVec import protvec
 
 
 def devide(seqPath, chopSize, outPrefix):
@@ -73,6 +74,12 @@ def main():
                         help="file path of protein keys to be used for\
                         encoding filteration. in case of multiple filters\
                         enter the consensus path followed by *")
+    parser.add_argument("-F", "--flatten", default="0",
+                        help="whether to flatten protvec or not;\
+                        0(default): false, 1: true")
+    parser.add_argument("-v", "--PVmodelPath",
+                        default="swissprot-reviewed-protvec.model",
+                        help="file of path of a pre-trained protvec model")
     parser.add_argument("-m", "--maxLen", default="2000",
                         help="maximum length of the protein to be encoded;\
                         if -1 m = max protein length, default = 2000")
@@ -110,6 +117,8 @@ def main():
     method = args.method
     k = int(args.kmerLength)
     dsize = int(args.dsize)
+    flatten = bool(int(args.flatten))
+    PVmodel = args.PVmodelPath
 
     if not (GOfile is None):
         outPrefix = args.outPrefix if args.outPrefix != "" else GOfile
@@ -119,7 +128,7 @@ def main():
     if collection != "":
         GOfilter = create_filter(collection, numFreqGO, outPrefix)
 
-    if method in "okc":
+    if method in "okcp":
         if not (seqPath is None):
             if outPrefix == seqPath:
                 outPrefix = seqPath[:-6]
@@ -129,6 +138,8 @@ def main():
                 encoder = protKmers(k)
             elif method == 'c':
                 encoder = AAcomptability(dsize)
+            elif method == 'p':
+                encoder = protvec(PVmodel, flatten)
             if Protfilter != "":
                 encoder.load_filter(Protfilter)
             if chopSize == -1:

@@ -10,9 +10,9 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['biopython']
+requirements = ['biopython', 'biovec']
 
-setup_requirements = ['biopython']
+setup_requirements = ['biopython', 'biovec']
 
 test_requirements = []
 
@@ -49,7 +49,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/anegm98/protencoder',
-    version='1.2.1',
+    version='1.3.0',
     zip_safe=False,
     package_data={'protencoder': ['data/*']}
 )
