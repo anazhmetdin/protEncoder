@@ -111,7 +111,11 @@ def main():
     k = int(args.kmerLength)
     dsize = int(args.dsize)
 
-    outPrefix = args.outPrefix if args.outPrefix != "" else seqPath
+    if not (GOfile is None):
+        outPrefix = args.outPrefix if args.outPrefix != "" else GOfile
+    elif not (seqPath is None):
+        outPrefix = args.outPrefix if args.outPrefix != "" else seqPath
+
     if collection != "":
         GOfilter = create_filter(collection, numFreqGO, outPrefix)
 
@@ -140,8 +144,8 @@ def main():
                     encoder.dump(outPrefix+"_part"+num)
 
         elif not (GOfile is None):
-            if args.outPrefix == seqPath:
-                outPrefix = seqPath[:-4]
+            if outPrefix == GOfile:
+                outPrefix = GOfile[:-4]
             if not GOpartioned:
                 oneHotencd = GOencoder()
                 if Protfilter != "":
