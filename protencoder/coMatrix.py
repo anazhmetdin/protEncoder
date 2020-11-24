@@ -24,7 +24,7 @@ class AAcomptability():
                             encoded[i][k][j] = score
                         else:
                             break
-            encoded = np.mean(encoded, axis=0, dtype='float32')
+            # encoded = np.mean(encoded, axis=0, dtype='float32')
             encoded = self.co_resize(encoded)
             self.handler.seqDict[prot] = encoded.astype('uint8')
 
@@ -33,6 +33,7 @@ class AAcomptability():
             interpolation = INTER_LINEAR
         elif prot.shape[0] > self.dsize[0]:
             interpolation = INTER_AREA
+        prot = prot.reshape((prot.shape[1], prot.shape[2], 3))
         x = resize(prot, self.dsize, interpolation=interpolation)
         return x
 
