@@ -4,9 +4,10 @@ import numpy as np
 
 
 class AAcomptability():
-    def __init__(self, dsize=(500, 500)):
+    def __init__(self, dsize=(500, 500), action='pad'):
         self.handler = encoder()
         self.dsize = (dsize, dsize)
+        self.action = action
         self.SCM, self.HCM, self.CCM = get_data()
         self.matrices = [self.SCM, self.HCM, self.CCM]
 
@@ -29,12 +30,27 @@ class AAcomptability():
             self.handler.seqDict[prot] = encoded.astype('uint8')
 
     def co_resize(self, prot):
-        if prot.shape[0] < self.dsize[0]:
-            interpolation = INTER_LINEAR
-        elif prot.shape[0] > self.dsize[0]:
-            interpolation = INTER_AREA
-        prot = prot.reshape((prot.shape[1], prot.shape[2], 3))
-        x = resize(prot, self.dsize, interpolation=interpolation)
+        if prot.shape[1] > self.dsize[0]:
+            x = resize(prot, self.dsize, interpolation=INTER_AREA)
+        elif prot.shape[1] < self.dsize[0]:
+            if self.action == "repeat":
+                repeatSize = int(self.dsize[0]/prot.shape[1])
+                x = np.repeat(prot, repeatSize, axis=1)
+                x = np.repeat(x, repeatSize, axis=2)
+                padSize = self.dsize[0] - x.shape[1]
+                x = np.pad(prot, ((0, 0), (0, padSize), (0, padSize)),
+                           mode="constant")
+            elif self.action == "tile":
+                tileSize = int(self.dsize[0]/prot.shape[1])+1
+                x = np.tile(prot, (0, tileSize, tileSize))
+                x = x[:, :self.dsize[0], :self.dsize[0]]
+            elif self.action == "resize":
+                x = resize(prot, self.dsize, interpolation=INTER_LINEAR)
+            elif self.action == "pad":
+                padSize = self.dsize[0] - prot.shape[1]
+                x = np.pad(prot, ((0, 0), (0, padSize), (0, padSize)),
+                           mode="constant")
+        x = x.reshape((x.shape[1], x.shape[2], 3))
         return x
 
     def read(self, seqPath):

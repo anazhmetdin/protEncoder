@@ -68,6 +68,10 @@ def main():
     parser.add_argument("-M", "--method", default="o",
                         help="protein encoding method; o: (defult)onehot,\
                         k: kmers frequency, c: compatibility matrices")
+    parser.add_argument("-e", "--enlargenMode", default='0',
+                        help="mode to enlarge a small protein in method\
+                        compatibility matrices; pad(default), resize, tile,\
+                        repeat")
     parser.add_argument("-k", "--kmerLength", default="3",
                         help="kmer length in frequency encoder")
     parser.add_argument("-f", "--Protfilter", default="",
@@ -119,6 +123,7 @@ def main():
     dsize = int(args.dsize)
     flatten = bool(int(args.flatten))
     PVmodel = args.PVmodelPath
+    action = args.enlargenMode
 
     if not (GOfile is None):
         outPrefix = args.outPrefix if args.outPrefix != "" else GOfile
@@ -137,7 +142,7 @@ def main():
             elif method == 'k':
                 encoder = protKmers(k)
             elif method == 'c':
-                encoder = AAcomptability(dsize)
+                encoder = AAcomptability(dsize, action)
             elif method == 'p':
                 encoder = protvec(PVmodel, flatten)
             if Protfilter != "":
