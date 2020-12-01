@@ -13,7 +13,7 @@ class AAcomptability():
 
     def encode(self):
         for prot in self.handler.seqDict:
-            seq = self.handler.seqDict[prot]
+            seq = self.handler.seqDict[prot][:1000]
             encoded = np.zeros((len(self.matrices), len(seq), len(seq)),
                                dtype='uint8')
             for i in range(len(self.matrices)):
@@ -26,6 +26,7 @@ class AAcomptability():
                         else:
                             break
             # encoded = np.mean(encoded, axis=0, dtype='float32')
+            encoded = encoded.reshape((encoded.shape[1], encoded.shape[2], 3))
             encoded = self.co_resize(encoded)
             self.handler.seqDict[prot] = encoded.astype('uint8')
 
@@ -52,7 +53,6 @@ class AAcomptability():
                            mode="constant")
         else:
             x = prot
-        x = x.reshape((x.shape[1], x.shape[2], 3))
         return x
 
     def read(self, seqPath):
