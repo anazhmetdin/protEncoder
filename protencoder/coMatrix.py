@@ -50,6 +50,8 @@ class AAcomptability():
                 padSize = self.dsize[0] - prot.shape[1]
                 x = np.pad(prot, ((0, 0), (0, padSize), (0, padSize)),
                            mode="constant")
+        else:
+            x = prot
         x = x.reshape((x.shape[1], x.shape[2], 3))
         return x
 
