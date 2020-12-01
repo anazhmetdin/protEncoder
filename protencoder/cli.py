@@ -78,7 +78,7 @@ def main():
                         help="file path of protein keys to be used for\
                         encoding filteration. in case of multiple filters\
                         enter the consensus path followed by *")
-    parser.add_argument("-F", "--flatten", default="0",
+    parser.add_argument("-V", "--flatten", default="0",
                         help="whether to flatten protvec or not;\
                         0(default): false, 1: true")
     parser.add_argument("-v", "--PVmodelPath",
