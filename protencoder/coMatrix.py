@@ -33,18 +33,18 @@ class AAcomptability():
             seq = self.handler.seqDict[prot][:1000]
             encoded = np.zeros((len(self.matrices), len(seq), len(seq)),
                                dtype='uint8')
+            Xs = ['R', 'K', 'D', 'Q', 'N', 'E', 'H', 'S', 'T',
+                  'P', 'Y', 'C', 'G', 'A', 'M', 'W', 'L', 'V',
+                  'F', 'I']
+            Bs = ['N', 'D']
+            Zs = ['Q', 'E']
+            Js = ['L', 'I']
             for i in range(len(self.matrices)):
                 for j in range(len(seq)):
                     for k in range(len(seq)):
                         A = seq[j]
                         B = seq[k]
                         if k <= j:
-                            Xs = ['R', 'K', 'D', 'Q', 'N', 'E', 'H', 'S', 'T',
-                                  'P', 'Y', 'C', 'G', 'A', 'M', 'W', 'L', 'V',
-                                  'F', 'I']
-                            Bs = ['N', 'D']
-                            Zs = ['Q', 'E']
-                            Js = ['L', 'I']
                             if A == 'X':
                                 A = Xs[random.randint(0, len(Xs)-1)]
                             if B == 'X':
