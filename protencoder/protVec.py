@@ -22,4 +22,4 @@ class protvec():
         self.handler.read_fasta(seqPath)
 
     def dump(self, outPrefix):
-        self.handler.dump(outPrefix, "kmerHz")
+        self.handler.dump(outPrefix, "protVec")

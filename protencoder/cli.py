@@ -82,7 +82,7 @@ def main():
                         help="whether to flatten protvec or not;\
                         0(default): false, 1: true")
     parser.add_argument("-v", "--PVmodelPath",
-                        default="swissprot-reviewed-protvec.model",
+                        default="protencoder/data/swissprot-reviewed-protvec.model",
                         help="file of path of a pre-trained protvec model")
     parser.add_argument("-m", "--maxLen", default="2000",
                         help="maximum length of the protein to be encoded;\
