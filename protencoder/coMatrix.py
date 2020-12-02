@@ -1,6 +1,7 @@
 from protencoder.protencoder import encoder
 from cv2 import resize, INTER_LINEAR, INTER_AREA
 import numpy as np
+import random
 
 
 class AAcomptability():
@@ -12,6 +13,22 @@ class AAcomptability():
         self.matrices = [self.SCM, self.HCM, self.CCM]
 
     def encode(self):
+        # self.aaDict['X'] = self.Nprops * [0.5]
+        # self.aa['X'] = list(range(len(self.aaDict)-1))
+        # self.aaDict['U'] = self.aaDict['C']
+        # self.aa['U'] = self.aa['C']
+        # self.aaDict['O'] = self.aaDict['K']
+        # self.aa['O'] = self.aa['K']
+        # # adding 'B' for 'N'/'D', and 'Z' for 'Q'/'E', and 'J' for 'L'/'I'
+        # summ = [sum(i) for i in zip(self.aaDict['N'], self.aaDict['D'])]
+        # self.aaDict['B'] = [x/2 for x in summ]
+        # self.aa['B'] = self.aa['N'] + self.aa['D']
+        # summ = [sum(i) for i in zip(self.aaDict['Q'], self.aaDict['E'])]
+        # self.aaDict['Z'] = [x/2 for x in summ]
+        # self.aa['Z'] = self.aa['Q'] + self.aa['E']
+        # summ = [sum(i) for i in zip(self.aaDict['L'], self.aaDict['I'])]
+        # self.aaDict['J'] = [x/2 for x in summ]
+        # self.aa['J'] = self.aa['L'] + self.aa['I']
         for prot in self.handler.seqDict:
             seq = self.handler.seqDict[prot][:1000]
             encoded = np.zeros((len(self.matrices), len(seq), len(seq)),
@@ -19,8 +36,40 @@ class AAcomptability():
             for i in range(len(self.matrices)):
                 for j in range(len(seq)):
                     for k in range(len(seq)):
+                        A = seq[j]
+                        B = seq[k]
                         if k <= j:
-                            score = (self.matrices[i][seq[j]][seq[k]]) * 255/20
+                            Xs = ['R', 'K', 'D', 'Q', 'N', 'E', 'H', 'S', 'T',
+                                  'P', 'Y', 'C', 'G', 'A', 'M', 'W', 'L', 'V',
+                                  'F', 'I']
+                            Bs = ['N', 'D']
+                            Zs = ['Q', 'E']
+                            Js = ['L', 'I']
+                            if A == 'X':
+                                A = Xs[random.randint(0, len(Xs)-1)]
+                            if B == 'X':
+                                B = Xs[random.randint(0, len(Xs)-1)]
+                            if A == 'B':
+                                A = Bs[random.randint(0, len(Bs)-1)]
+                            if B == 'B':
+                                B = Bs[random.randint(0, len(Bs)-1)]
+                            if A == 'Z':
+                                A = Zs[random.randint(0, len(Zs)-1)]
+                            if B == 'Z':
+                                B = Zs[random.randint(0, len(Zs)-1)]
+                            if A == 'J':
+                                A = Js[random.randint(0, len(Js)-1)]
+                            if B == 'J':
+                                B = Js[random.randint(0, len(Js)-1)]
+                            if A == 'U':
+                                A = 'C'
+                            if B == 'U':
+                                B = 'C'
+                            if A == 'O':
+                                A = 'K'
+                            if B == 'O':
+                                B = 'K'
+                            score = (self.matrices[i][A][B]) * 255/20
                             encoded[i][j][k] = score
                             encoded[i][k][j] = score
                         else:
