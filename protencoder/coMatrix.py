@@ -74,35 +74,37 @@ class AAcomptability():
                             encoded[i][k][j] = score
                         else:
                             break
-            # encoded = np.mean(encoded, axis=0, dtype='float32')
-            encoded = encoded.reshape((encoded.shape[1], encoded.shape[2], 3))
             encoded = self.co_resize(encoded)
             self.handler.seqDict[prot] = encoded.astype('uint8')
 
     def co_resize(self, prot):
         if prot.shape[1] > self.dsize[0]:
-            x = resize(prot, self.dsize, interpolation=INTER_AREA)
+            x = np.moveaxis(prot, 0, -1)
+            x = resize(x, self.dsize, interpolation=INTER_AREA)
+            x = np.moveaxis(x, -1, 0)
         elif prot.shape[1] < self.dsize[0]:
             if self.action == "repeat":
                 repeatSize = int(self.dsize[0]/prot.shape[1])
                 x = np.repeat(prot, repeatSize, axis=1)
                 x = np.repeat(x, repeatSize, axis=2)
                 padSize = self.dsize[0] - x.shape[1]
-                x = np.pad(prot, ((0, 0), (0, padSize), (0, padSize)),
+                x = np.pad(x, ((0, 0), (0, padSize), (0, padSize)),
                            mode="constant")
             elif self.action == "tile":
                 tileSize = int(self.dsize[0]/prot.shape[1])+1
-                x = np.tile(prot, (0, tileSize, tileSize))
+                x = np.tile(prot, (1, tileSize, tileSize))
                 x = x[:, :self.dsize[0], :self.dsize[0]]
             elif self.action == "resize":
-                x = resize(prot, self.dsize, interpolation=INTER_LINEAR)
+                x = np.moveaxis(prot, 0, -1)
+                x = resize(x, self.dsize, interpolation=INTER_LINEAR)
+                x = np.moveaxis(x, -1, 0)
             elif self.action == "pad":
                 padSize = self.dsize[0] - prot.shape[1]
                 x = np.pad(prot, ((0, 0), (0, padSize), (0, padSize)),
                            mode="constant")
         else:
             x = prot
-        return x
+        return np.moveaxis(x, 0, -1)
 
     def read(self, seqPath):
         self.handler.read_fasta(seqPath)
