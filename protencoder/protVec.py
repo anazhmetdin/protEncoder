@@ -23,20 +23,20 @@ class protvec():
             seq = self.handler.seqDict[prot]
             while ('X' in seq):
                 aa = Xs[random.randint(0, len(Xs)-1)]
-                seq.replace("X", aa, 1)
+                seq = seq.replace("X", aa, 1)
             while ('B' in seq):
                 aa = Bs[random.randint(0, len(Bs)-1)]
-                seq.replace("B", aa, 1)
+                seq = seq.replace("B", aa, 1)
             while ('Z' in seq):
                 aa = Zs[random.randint(0, len(Zs)-1)]
-                seq.replace("Z", aa, 1)
+                seq = seq.replace("Z", aa, 1)
             while ('J' in seq):
                 aa = Js[random.randint(0, len(Js)-1)]
-                seq.replace("J", aa, 1)
+                seq = seq.replace("J", aa, 1)
             if 'U' in seq:
-                seq.replace("U", 'C')
+                seq = seq.replace("U", 'C')
             if 'O' in seq:
-                seq.replace("O", "k")
+                seq = seq.replace("O", "K")
             encoded = self.pv.to_vecs(seq)
             if self.flatten:
                 a = np.array([])

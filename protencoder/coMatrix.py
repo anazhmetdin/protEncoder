@@ -39,36 +39,28 @@ class AAcomptability():
             Bs = ['N', 'D']
             Zs = ['Q', 'E']
             Js = ['L', 'I']
+            while ('X' in seq):
+                aa = Xs[random.randint(0, len(Xs)-1)]
+                seq = seq.replace("X", aa, 1)
+            while ('B' in seq):
+                aa = Bs[random.randint(0, len(Bs)-1)]
+                seq = seq.replace("B", aa, 1)
+            while ('Z' in seq):
+                aa = Zs[random.randint(0, len(Zs)-1)]
+                seq = seq.replace("Z", aa, 1)
+            while ('J' in seq):
+                aa = Js[random.randint(0, len(Js)-1)]
+                seq = seq.replace("J", aa, 1)
+            if 'U' in seq:
+                seq = seq.replace("U", 'C')
+            if 'O' in seq:
+                seq = seq.replace("O", "K")
             for i in range(len(self.matrices)):
                 for j in range(len(seq)):
                     for k in range(len(seq)):
                         A = seq[j]
                         B = seq[k]
                         if k <= j:
-                            if A == 'X':
-                                A = Xs[random.randint(0, len(Xs)-1)]
-                            if B == 'X':
-                                B = Xs[random.randint(0, len(Xs)-1)]
-                            if A == 'B':
-                                A = Bs[random.randint(0, len(Bs)-1)]
-                            if B == 'B':
-                                B = Bs[random.randint(0, len(Bs)-1)]
-                            if A == 'Z':
-                                A = Zs[random.randint(0, len(Zs)-1)]
-                            if B == 'Z':
-                                B = Zs[random.randint(0, len(Zs)-1)]
-                            if A == 'J':
-                                A = Js[random.randint(0, len(Js)-1)]
-                            if B == 'J':
-                                B = Js[random.randint(0, len(Js)-1)]
-                            if A == 'U':
-                                A = 'C'
-                            if B == 'U':
-                                B = 'C'
-                            if A == 'O':
-                                A = 'K'
-                            if B == 'O':
-                                B = 'K'
                             score = (self.matrices[i][A][B]) * 255/20
                             encoded[i][j][k] = score
                             encoded[i][k][j] = score
