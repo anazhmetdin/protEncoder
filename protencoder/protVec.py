@@ -1,5 +1,6 @@
 import biovec
 import random
+import numpy as np
 from protencoder.protencoder import encoder
 
 
@@ -38,7 +39,10 @@ class protvec():
                 seq.replace("O", "k")
             encoded = self.pv.to_vecs(seq)
             if self.flatten:
-                encoded = encoded.flatten()
+                a = np.array([])
+                for i in encoded:
+                    a = np.concatenate((a, i), axis=None)
+                encoded = a
             self.handler.seqDict[prot] = encoded
 
     def read(self, seqPath):
