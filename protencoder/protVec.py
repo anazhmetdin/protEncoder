@@ -37,6 +37,8 @@ class protvec():
                 seq = seq.replace("U", 'C')
             if 'O' in seq:
                 seq = seq.replace("O", "K")
+            if len(seq) < 5:
+                seq = seq + seq
             encoded = self.pv.to_vecs(seq)
             if self.flatten:
                 a = np.array([])
