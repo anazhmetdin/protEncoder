@@ -68,7 +68,7 @@ def main():
     parser.add_argument("-M", "--method", default="o",
                         help="protein encoding method; o: (defult)onehot,\
                         k: kmers frequency, c: compatibility matrices")
-    parser.add_argument("-e", "--enlargenMode", default='0',
+    parser.add_argument("-e", "--enlargenMode", default='pad',
                         help="mode to enlarge a small protein in method\
                         compatibility matrices; pad(default), resize, tile,\
                         repeat")
