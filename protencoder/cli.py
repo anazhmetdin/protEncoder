@@ -148,16 +148,32 @@ def main():
             if Protfilter != "":
                 encoder.load_filter(Protfilter)
             if chopSize == -1:
-                encoder.read(seqPath)
-                encoder.encode()
-                encoder.dump(outPrefix)
-            else:
-                devide(seqPath, chopSize, outPrefix)
-                for name in glob.glob(outPrefix+"_part*.fasta"):
-                    encoder.read(name)
+                if '*' in seqPath:
+                    for name in glob.glob(seqPath):
+                        encoder.read(name)
+                        encoder.encode()
+                        encoder.dump(name)
+                else:
+                    encoder.read(seqPath)
                     encoder.encode()
-                    num = name[name.find("part") + 4:-6]
-                    encoder.dump(outPrefix+"_part"+num)
+                    encoder.dump(outPrefix)
+            else:
+                if '*' in seqPath:
+                    for name1 in glob.glob(seqPath):
+                        devide(name1, chopSize, name1.rstrip(".fasta"))
+                        name1 = name1.rstrip(".fasta")
+                        for name in glob.glob(name1+"_part*.fasta"):
+                            encoder.read(name)
+                            encoder.encode()
+                            num = name[name.find("part") + 4:-6]
+                            encoder.dump(name1+"_part"+num)
+                else:
+                    devide(seqPath, chopSize, outPrefix)
+                    for name in glob.glob(outPrefix+"_part*.fasta"):
+                        encoder.read(name)
+                        encoder.encode()
+                        num = name[name.find("part") + 4:-6]
+                        encoder.dump(outPrefix+"_part"+num)
 
         elif not (GOfile is None):
             if outPrefix == GOfile:
