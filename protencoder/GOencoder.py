@@ -1,4 +1,6 @@
 from protencoder.protencoder import encoder
+import glob
+import numpy as np
 
 
 class GOencoder(encoder):
@@ -24,6 +26,46 @@ class GOencoder(encoder):
                 for GOA in self.handler.seqDict[seq][GOclass]:
                     encoded[self.GOclasses[GOclass][GOA]] = 1
                 self.handler.seqDict[seq][GOclass] = encoded
+
+    def decode(self, npyPrefix, keyPrefix, outPrefix):
+        keysFile = open(glob.glob(keyPrefix)[0])
+        keysList = []
+        for line in keysFile.readlines():
+            line = line.rstrip('\n').split('\t')
+            if line[1] == 'F':
+                keysList.append(line[0])
+            else:
+                break
+        keysFile.close()
+        report = open(outPrefix, 'w')
+        report.write("AUTHOR\tGOlite\nMODEL\t1\n")
+        report.write("KEYWORDS\tmachine learning.\n")
+        for file in glob.glob(npyPrefix):
+            file2 = file.replace("_prdcts", "_prdctsCert")
+            percentage = np.load(file2)
+            prediction = np.load(file)
+            predictionKeys = file[:file.rfind("_")]
+            predictionKeys = predictionKeys[:predictionKeys.rfind("_")]
+            predictionKeys = predictionKeys + "_keys.txt"
+            predictionKeys = predictionKeys.replace("__keys.txt", "_keys.txt")
+            prdctKeysFile = open(predictionKeys)
+            prdctKeysList = []
+            for line in prdctKeysFile.readlines():
+                prdctKeysList.append(line.rstrip('\n'))
+            prdctKeysFile.close()
+            for prot in range(len(prdctKeysList)):
+                for GO in range(len(prediction[prot])):
+                    if prediction[prot][GO] == 1:
+                        id = prdctKeysList[prot]
+                        term = keysList[GO]
+                        cert = str(float(percentage[prot][GO])/100)
+                        if cert == '0.0':
+                            cert = '0.01'
+                        if len(cert) == 3:
+                            cert = cert+'0'
+                        report.write(id+'\t'+term+'\t'+cert+'\n')
+        report.write("END\n")
+        report.close()
 
     def read(self, GOfile):
         self.handler.read_GO(GOfile)
