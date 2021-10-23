@@ -78,6 +78,8 @@ Ambigous amino acids are randomly assigned to one of their corresponding essenti
 
 This is our suggested method based on different fields of research. The objective of this approach is to find a compatible method of protein encoding with the more advanced NN DenseNet, which requires input of specific dimension (224, 224, 3) in case the number of labels needs to be other than 1000.
 
+JC Biro [[3]](https://tbiomed.biomedcentral.com/articles/10.1186/1742-4682-3-15) construct Size, Charge and Hydropathy Compatibility Indices and Matrices (SCI & SCM, CCI & CCM, and HCI & HCM) by indexing the 200 possible amino acid pairs. Indices are calculated using size, charge and hydrophobicity of amino acid pairs. These indices are an approximation of the interaction strength between the pair; ranging from 1 (not compatible) to 20 (highly compatible).
+
 Ambigous amino acids are randomly assigned to one of their corresponding essential amino acids.
 
 ## Input and Output
